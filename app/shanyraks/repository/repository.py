@@ -17,7 +17,11 @@ class ShanyrakRepository:
     def get_shanyrak(self, shanyrak_id: str):
         return self.database["shanyraks"].find_one({"_id": ObjectId(shanyrak_id)})
 
-    def update_shanyrak(self, shanyrak_id: str, user_id: str, data: dict[str, Any]) -> UpdateResult:
+    def update_shanyrak(
+            self, shanyrak_id: str,
+            user_id: str,
+            data: dict[str, Any]
+    ) -> UpdateResult:
         return self.database["shanyraks"].update_one(
             filter={"_id": ObjectId(shanyrak_id), "user_id": ObjectId(user_id)},
             update={
@@ -28,4 +32,10 @@ class ShanyrakRepository:
     def delete_shanyrak(self, shanyrak_id: str, user_id: str) -> DeleteResult:
         return self.database["shanyraks"].delete_one(
             {"_id": ObjectId(shanyrak_id), "user_id": ObjectId(user_id)}
+        )
+
+    def add_media(self, result: list, shanyrak_id: str):
+        self.database["shanyraks"].update_one(
+            {"_id": ObjectId(shanyrak_id)},
+            {"$push": {"media": {"$each": result}}}
         )
