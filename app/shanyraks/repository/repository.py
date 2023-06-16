@@ -51,7 +51,9 @@ class ShanyrakRepository:
                     user_id: str,
                     data: str,
                     comment_id: str,
-                    time: str):
+                    time: str
+                    ):
+
         comment = {
             "_id": comment_id,
             "content": data,
@@ -62,4 +64,23 @@ class ShanyrakRepository:
         self.database["shanyraks"].update_one(
             {"_id": ObjectId(shanyrak_id)},
             {"$push": {"comments": comment}}
+        )
+
+    def get_comment(self, comment_id: str):
+        query = {"comments._id": comment_id}
+        projection = {"comments.$": 1}
+        result = self.database["shanyraks"].find_one(query , projection)
+        if result:
+            return result["comments"]
+        return None
+
+    def update_comment(
+        self,
+        comment_id: str,
+        user_id: str,
+        data: str
+    ):
+        return self.database["shanyraks"].update_one(
+            {"comments._id": comment_id},
+            {"$set": {"comments.$.content": data.content}}
         )
