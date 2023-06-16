@@ -58,7 +58,7 @@ class ShanyrakRepository:
             "created at": time,
             "author_id": user_id
         }
-        
+
         self.database["shanyraks"].update_one(
             {"_id": ObjectId(shanyrak_id)},
             {"$push": {"comments": comment}}
