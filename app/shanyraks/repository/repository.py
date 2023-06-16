@@ -45,3 +45,21 @@ class ShanyrakRepository:
             {"_id": ObjectId(shanyrak_id)},
             {"$unset": {"media": 1}}
         )
+
+    def add_comment(self,
+                    shanyrak_id: str,
+                    user_id: str,
+                    data: str,
+                    comment_id: str,
+                    time: str):
+        comment = {
+            "_id": comment_id,
+            "content": data,
+            "created at": time,
+            "author_id": user_id
+        }
+        
+        self.database["shanyraks"].update_one(
+            {"_id": ObjectId(shanyrak_id)},
+            {"$push": {"comments": comment}}
+        )

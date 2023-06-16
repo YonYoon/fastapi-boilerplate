@@ -22,6 +22,7 @@ class GetShanyrakResponse(AppModel):
     description: str
     user_id: Any
     media: list = []
+    comments: list = []
 
 
 @router.get("/{shanyrak_id:str}", response_model=GetShanyrakResponse)
