@@ -39,3 +39,9 @@ class ShanyrakRepository:
             {"_id": ObjectId(shanyrak_id)},
             {"$push": {"media": {"$each": result}}}
         )
+
+    def delete_media(self, shanyrak_id: str):
+        self.database["shanyraks"].update_one(
+            {"_id": ObjectId(shanyrak_id)},
+            {"$unset": {"media": 1}}
+        )
