@@ -18,15 +18,13 @@ class ShanyrakRepository:
         return self.database["shanyraks"].find_one({"_id": ObjectId(shanyrak_id)})
 
     def update_shanyrak(
-            self, shanyrak_id: str,
-            user_id: str,
-            data: dict[str, Any]
+        self, shanyrak_id: str, user_id: str, data: dict[str, Any]
     ) -> UpdateResult:
         return self.database["shanyraks"].update_one(
             filter={"_id": ObjectId(shanyrak_id), "user_id": ObjectId(user_id)},
             update={
                 "$set": data,
-            }
+            },
         )
 
     def delete_shanyrak(self, shanyrak_id: str, user_id: str) -> DeleteResult:
@@ -36,51 +34,42 @@ class ShanyrakRepository:
 
     def add_media(self, result: list, shanyrak_id: str):
         self.database["shanyraks"].update_one(
-            {"_id": ObjectId(shanyrak_id)},
-            {"$push": {"media": {"$each": result}}}
+            {"_id": ObjectId(shanyrak_id)}, {"$push": {"media": {"$each": result}}}
         )
 
     def delete_media(self, shanyrak_id: str):
         self.database["shanyraks"].update_one(
-            {"_id": ObjectId(shanyrak_id)},
-            {"$unset": {"media": 1}}
+            {"_id": ObjectId(shanyrak_id)}, {"$unset": {"media": 1}}
         )
 
-    def add_comment(self,
-                    shanyrak_id: str,
-                    user_id: str,
-                    data: str,
-                    comment_id: str,
-                    time: str
-                    ):
-
+    def add_comment(
+        self, shanyrak_id: str, user_id: str, data: str, comment_id: str, time: str
+    ):
         comment = {
             "_id": comment_id,
             "content": data,
             "created at": time,
-            "author_id": user_id
+            "author_id": user_id,
         }
 
         self.database["shanyraks"].update_one(
-            {"_id": ObjectId(shanyrak_id)},
-            {"$push": {"comments": comment}}
+            {"_id": ObjectId(shanyrak_id)}, {"$push": {"comments": comment}}
         )
 
     def get_comment(self, comment_id: str):
         query = {"comments._id": comment_id}
         projection = {"comments.$": 1}
-        result = self.database["shanyraks"].find_one(query , projection)
+        result = self.database["shanyraks"].find_one(query, projection)
         if result:
             return result["comments"]
         return None
 
-    def update_comment(
-        self,
-        comment_id: str,
-        user_id: str,
-        data: str
-    ):
+    def update_comment(self, comment_id: str, user_id: str, data: str):
         return self.database["shanyraks"].update_one(
-            {"comments._id": comment_id},
-            {"$set": {"comments.$.content": data.content}}
+            {"comments._id": comment_id}, {"$set": {"comments.$.content": data.content}}
         )
+
+    def delete_comment(self, comment_id: str):
+        query = {"comments._id": comment_id}
+        update = {"$pull": {"comments": {"_id": comment_id}}}
+        return self.database["shanyraks"].update_one(query, update)
